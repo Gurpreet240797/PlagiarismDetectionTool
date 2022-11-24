@@ -11,10 +11,21 @@
  */
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class PlagiarismDetector {
-    public static int checkPlagiarism(String inputStringFile1, String[] inputArrayFile2) {
+    public static int RabinKarpAlgorithm (String inputStringFile1, String searchPattern) {
+        int patLen = searchPattern.length();
+        int srcLen = inputStringFile1.length();
 
+        return 0;
+    }
+    public static int checkPlagiarism(String inputStringFile1, String[] inputArrayFile2) {
+        int value = 0;
+
+        for (String word: inputArrayFile2) {
+            value = RabinKarpAlgorithm(inputStringFile1, word);
+        }
         return 0;
     }
     public static int filePreProcessing (File file1, File file2) throws IOException {
