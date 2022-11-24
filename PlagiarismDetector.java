@@ -13,7 +13,10 @@
 import java.io.*;
 
 public class PlagiarismDetector {
+    public static int checkPlagiarism(String inputStringFile1, String[] inputArrayFile2) {
 
+        return 0;
+    }
     public static int filePreProcessing (File file1, File file2) throws IOException {
 
         BufferedReader readFile1 = null;
@@ -35,9 +38,9 @@ public class PlagiarismDetector {
             }
 
             String inputStringFile1 = strFile1.toString().toLowerCase().replaceAll("[^a-z0-9]", "");
-            String inputStringFile2 = strFile2.toString().toLowerCase().replaceAll("[^a-z0-9]", "");
+            String[] inputArrayFile2 = strFile2.toString().toLowerCase().replaceAll("[^a-z0-9 ]", "").split("\\W+");
 
-            System.out.println(inputStringFile1);
+            int result = checkPlagiarism(inputStringFile1, inputArrayFile2);
             return 0;
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
