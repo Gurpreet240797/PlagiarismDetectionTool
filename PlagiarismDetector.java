@@ -11,24 +11,40 @@
  */
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class PlagiarismDetector {
-    public static int RabinKarpAlgorithm (String inputStringFile1, String searchPattern) {
-        int patLen = searchPattern.length();
-        int srcLen = inputStringFile1.length();
-
-        return 0;
-    }
-    public static int checkPlagiarism(String inputStringFile1, String[] inputArrayFile2) {
-        int value = 0;
-
-        for (String word: inputArrayFile2) {
-            value = RabinKarpAlgorithm(inputStringFile1, word);
+    public static int checkPlagiarismWrapper(int[][] DP) {
+        int plagiarismCounter = 0;
+        for (int i = 1; i < DP.length; i++) {
+            for (int j = 1; j < DP[0].length; j++) {
+                if (DP[i - 1][j - 1] > 2 && (DP[i - 1][j - 1] > DP[i][j])) {
+                    plagiarismCounter += DP[i - 1][j - 1];
+                }
+            }
         }
-        return 0;
+        return plagiarismCounter;
     }
-    public static int filePreProcessing (File file1, File file2) throws IOException {
+    public static int checkPlagiarism(String[] inputArrayFile1, String[] inputArrayFile2, int inputArrayFile1Len, int inputArrayFile2Len) {
+        int response = 0;
+        int DP[][] = new int[inputArrayFile1Len + 1][inputArrayFile2Len + 1];
+
+        for (int i = 0; i <= inputArrayFile1Len; i++) {
+            for (int j = 0; j <= inputArrayFile2Len; j++) {
+                if (i == 0 || j == 0) {
+                    DP[i][j] = 0;
+                } else if (inputArrayFile1[i - 1].equals(inputArrayFile2[j - 1])) {
+                    DP[i][j] = DP[i - 1][j - 1] + 1;
+                    response = Math.max(response, DP[i][j]);
+                } else {
+                    DP[i][j] = 0;
+                }
+            }
+        }
+
+        return checkPlagiarismWrapper(DP);
+    }
+
+    public static int filePreProcessing(File file1, File file2) throws IOException {
 
         BufferedReader readFile1 = null;
         BufferedReader readFile2 = null;
@@ -48,11 +64,24 @@ public class PlagiarismDetector {
                 strFile2.append(temp);
             }
 
-            String inputStringFile1 = strFile1.toString().toLowerCase().replaceAll("[^a-z0-9]", "");
-            String[] inputArrayFile2 = strFile2.toString().toLowerCase().replaceAll("[^a-z0-9 ]", "").split("\\W+");
+            String inputStringFile1 = strFile1.toString()
+                    .replaceAll("[^a-zA-Z0-9]", " ")
+                    .replaceAll("\\s+", " ")
+                    .toLowerCase();
+            String[] inputArrayFile1 = inputStringFile1.split(" ");
 
-            int result = checkPlagiarism(inputStringFile1, inputArrayFile2);
-            return 0;
+            String inputStringFile2 = strFile2.toString()
+                    .replaceAll("[^a-zA-Z0-9]", " ")
+                    .replaceAll("\\s+", " ")
+                    .toLowerCase();
+            String[] inputArrayFile2 = inputStringFile2.split(" ");
+
+            int resultPlagiarism = checkPlagiarism(inputArrayFile1, inputArrayFile2, inputArrayFile1.length, inputArrayFile2.length);
+            float finalResult = ((float) resultPlagiarism * 2 * 100) / (inputArrayFile1.length + inputArrayFile2.length);
+
+            int plagiarism = (finalResult < 26) ? 0 : 1;
+            return plagiarism;
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -63,7 +92,7 @@ public class PlagiarismDetector {
         }
     }
 
-    public static void main (String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         File file1, file2;
 
         try {
@@ -71,8 +100,11 @@ public class PlagiarismDetector {
                 file1 = new File(args[0]);
                 file2 = new File(args[1]);
             } else {
-                file1 = new File("/Users/gurpreetsingh/Concordia/Fall2022/Algorithms/Project/sample_data_and_submission/data/okay01/1.txt");
-                file2 = new File("/Users/gurpreetsingh/Concordia/Fall2022/Algorithms/Project/sample_data_and_submission/data/okay01/2.txt");
+                file1 = new File("/Users/gurpreetsingh/Concordia/Fall2022/Algorithms/Project/sample_data_and_submission/data/okay02/1.txt");
+                file2 = new File("/Users/gurpreetsingh/Concordia/Fall2022/Algorithms/Project/sample_data_and_submission/data/okay02/2.txt");
+
+                //file1 = new File("/Users/gurpreetsingh/Concordia/Fall2022/Algorithms/Project/sample_data_and_submission/data/plagiarism07/1.txt");
+                //file2 = new File("/Users/gurpreetsingh/Concordia/Fall2022/Algorithms/Project/sample_data_and_submission/data/plagiarism07/2.txt");
             }
 
             int response = filePreProcessing(file1, file2);
